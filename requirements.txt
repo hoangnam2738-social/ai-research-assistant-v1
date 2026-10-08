@@ -1,0 +1,8 @@
+streamlit
+pandas
+pymupdf
+python-docx
+google-genai
+python-dotenv
+matplotlib
+seaborn
