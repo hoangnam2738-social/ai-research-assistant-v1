@@ -18,7 +18,13 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 1. CẤU HÌNH API
 load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# Thử lấy khóa từ Streamlit Cloud, nếu chạy ở máy tính local thì lấy từ file .env
+try:
+    api_key = st.secrets["GEMINI_API_KEY"]
+except:
+    api_key = os.getenv("GEMINI_API_KEY")
+
+client = genai.Client(api_key=api_key)
 
 # 2. CÁC HÀM XỬ LÝ LÕI
 def extract_text(uploaded_file):
