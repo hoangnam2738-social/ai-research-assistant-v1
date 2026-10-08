@@ -47,11 +47,15 @@ def add_formatted_text(document, text):
         line = line.strip()
         if not line:
             continue
-        clean_line = line.replace('**', '') 
+            
+        # Tự động bộ lọc xóa các dấu markdown và latex thô
+        clean_line = line.replace('**', '').replace('$', '').replace('`', '') 
+        
         p = document.add_paragraph(clean_line)
         
         if line.startswith('#'):
             p.runs[0].bold = True
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         else:
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.line_spacing = 1.5
@@ -146,12 +150,18 @@ if st.button("🚀 Xử lý Dữ liệu, Vẽ Biểu Đồ & Viết Bài Báo", 
             img_buffer.seek(0)
 
     # --- PHASE C: GỌI AI & HIỂN THỊ LIVE PREVIEW ---
+    # --- PHASE C: GỌI AI & HIỂN THỊ LIVE PREVIEW ---
     with st.spinner("AI đang chắp bút viết bài... (Vui lòng chờ khoảng 45s)"):
         
         prompt_1 = f"""
         Đóng vai Giáo sư Kinh tế học Hành vi và Khoa học Dữ liệu. Viết Chương 1 và Chương 2 cho đề tài '{topic}'.
         Nguồn tài liệu (BẮT BUỘC trích dẫn): {lit_review_knowledge}
-        YÊU CẦU: Trích dẫn chuẩn APA. Xây dựng Khung lý thuyết và Khoảng trống nghiên cứu. Hành văn súc tích, phản biện. Viết khoảng 800 từ.
+        
+        YÊU CẦU NỘI DUNG: Trích dẫn chuẩn APA. Xây dựng Khung lý thuyết và Khoảng trống nghiên cứu. Hành văn súc tích. Viết khoảng 800 từ.
+        
+        YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC TUÂN THỦ NGHIÊM NGẶT):
+        - KHÔNG vẽ sơ đồ bằng ký tự (như +---+ hoặc |). Hãy mô tả khung lý thuyết bằng các đoạn văn.
+        - KHÔNG dùng định dạng bảng Markdown (như | Cột 1 | Cột 2 |). Trình bày thông tin dưới dạng danh sách gạch đầu dòng.
         """
         text_1 = generate_section(prompt_1)
         doc.add_heading('1. Giới thiệu & Tổng quan tài liệu', level=1)
@@ -160,8 +170,12 @@ if st.button("🚀 Xử lý Dữ liệu, Vẽ Biểu Đồ & Viết Bài Báo", 
         prompt_2 = f"""
         Viết Chương 3 (Phương pháp luận) và Chương 4 (Phân tích kết quả) cho đề tài '{topic}'.
         DỮ LIỆU ĐẦU VÀO: {data_summary}
-        YÊU CẦU ĐỘ SÂU: Thiết lập mô hình Kinh tế lượng (Hồi quy Logistic). Biện luận ý nghĩa thống kê. 
-        Giải thích 'điểm gãy' (tipping point) bằng giới hạn nhận thức. Viết khoảng 1000 từ.
+        
+        YÊU CẦU NỘI DUNG: Thiết lập mô hình Hồi quy Logistic. Biện luận ý nghĩa thống kê. Giải thích 'điểm gãy' bằng giới hạn nhận thức. Viết khoảng 1000 từ.
+        
+        YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC TUÂN THỦ NGHIÊM NGẶT):
+        - KHÔNG dùng bất kỳ ký hiệu toán học LaTeX nào (TUYỆT ĐỐI KHÔNG dùng dấu $, $$, \beta, \frac, \epsilon). Hãy viết tên các biến và công thức bằng chữ thuần túy (Ví dụ: Beta 1, P(Y=1), Xác suất bỏ giỏ = ...).
+        - KHÔNG dùng định dạng bảng Markdown (như | Nhóm | Tỷ lệ |). Hãy liệt kê kết quả số liệu thành các gạch đầu dòng rõ ràng.
         """
         text_2 = generate_section(prompt_2)
         doc.add_heading('2. Phương pháp và Kết quả Định lượng', level=1)
